@@ -1,0 +1,128 @@
+#include "xs/openssl.h"
+
+
+MODULE = Crypt::Keyczar		PACKAGE = Crypt::Keyczar::DsaPublicKeyEngine
+
+Crypt::Keyczar::DsaPublicKeyEngine
+new(class, y, p, q, g)
+	SV *class
+	SV *y
+	SV *p
+	SV *q
+	SV *g
+	CODE:
+	{
+	    DSA *dsa;
+
+	    PERL_UNUSED_VAR(class);
+
+	    if ((dsa = DSA_new()) == NULL) {
+	        crypt__keyczar__util__croak_openssl();
+	        /* NOTREACHED */
+	    }
+	    dsa->p = BN_bin2bn((const unsigned char *)SvPVbyte_nolen(p), SvCUR(p), NULL);
+	    if (dsa->p == NULL) {
+	        DSA_free(dsa);
+	        crypt__keyczar__util__croak_openssl();
+	        /* NOTREACHED */
+	    }
+	    dsa->q = BN_bin2bn((const unsigned char *)SvPVbyte_nolen(q), SvCUR(q), NULL);
+	    if (dsa->q == NULL) {
+	        DSA_free(dsa);
+	        crypt__keyczar__util__croak_openssl();
+	        /* NOTREACHED */
+	    }
+	    dsa->g = BN_bin2bn((const unsigned char *)SvPVbyte_nolen(g), SvCUR(g), NULL);
+	    if (dsa->g == NULL) {
+	        DSA_free(dsa);
+	        crypt__keyczar__util__croak_openssl();
+	        /* NOTREACHED */
+	    }
+	    dsa->pub_key = BN_bin2bn((const unsigned char *)SvPVbyte_nolen(y), SvCUR(y), NULL);
+	    if (dsa->pub_key == NULL) {
+	        DSA_free(dsa);
+	        crypt__keyczar__util__croak_openssl();
+	        /* NOTREACHED */
+	    }
+
+	    Newz(0, RETVAL, 1, struct Crypt__Keyczar__DsaPublicKeyEngine_class);
+	    RETVAL->dsa = dsa;
+	}
+	OUTPUT:
+	    RETVAL
+
+
+void
+DESTROY(self)
+	Crypt::Keyczar::DsaPublicKeyEngine self
+	CODE:
+	{
+	    if (self->dsa != NULL) {
+	        DSA_free(self->dsa);
+	        self->dsa = NULL;
+	    }
+	    Safefree(self);
+	}
+
+
+SV *
+init(self, ...)
+	Crypt::Keyczar::DsaPublicKeyEngine self
+	CODE:
+	{
+	    RETVAL = newSVpv("", 0);
+	}
+	OUTPUT:
+	    RETVAL
+
+
+void
+update(self, ...)
+	Crypt::Keyczar::DsaPublicKeyEngine self
+	CODE:
+	{
+	    int i;
+	    SV *data;
+	    if (self->message == NULL) {
+	        self->message = EVP_MD_CTX_create();
+	        if (!EVP_DigestInit_ex(self->message, EVP_sha1(), NULL)) {
+	            croak("cannot initialize SHA1 context");
+	        }
+	    }
+
+	    for (i = 1; i < items; i++) {
+	        data = ST(i);
+	        if (!EVP_DigestUpdate(self->message, SvPVbyte_nolen(data), SvCUR(data))) {
+	            croak("cannot update SHA1 context");
+	        }
+	    }
+	}
+
+
+int
+verify(self, mac)
+	Crypt::Keyczar::DsaPublicKeyEngine self
+	SV *mac
+	CODE:
+	{
+	    unsigned char md[EVP_MAX_MD_SIZE];
+	    unsigned int l = 0;
+	    int rc;
+
+	    if (self->message == NULL) {
+	        RETVAL = 0;
+	        return;
+	    }
+	    EVP_DigestFinal_ex(self->message, md, &l);
+
+	    rc = DSA_verify(0,
+	                    md, l,
+                            (unsigned char *)SvPVbyte_nolen(mac), SvCUR(mac), self->dsa);
+	    if (rc == -1) {
+	        crypt__keyczar__util__croak_openssl();
+	        /* NOTREACHED */
+	    }
+	    RETVAL = rc == 1;
+	}
+	OUTPUT:
+	    RETVAL

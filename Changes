@@ -1,0 +1,25 @@
+0.03	Wed Nov 11 17:07:11 JST 2009
+	- support HMAC-SHA224, HMAC-SHA256, HMAC-SHA384, HMAC-SHA512.
+
+0.02	Tue Aug 18 17:04:34 JST 2009
+	- rewrite Crypt::Keyczar::HmacEngine by XS.
+	- rewrite Crypt::Keyczar::Util::random() by XS.
+	- rewrite Crypt::Keyczar::AesEngine by XS.
+	- support RSA private key decrypt.
+	- support RSA public key encrypt.
+	- support RSA private key verify.
+	- support RSA private key sign.
+	- support RSA public key verify.
+	- support export RSA public key.
+	- independent Digest::SHA1
+	- add Crypt::Keyczar::FileWriter.
+	- support DSA public key verify.
+	- support DSA private key sign.
+
+0.01	Wed Jul 22 20:15:10 JST 2009
+	- add "usekey" option.
+	- add Java and Python test code.
+	- support "revoke".
+	- support AES-CBC with HMAC-SHA1 encryption.
+	- support HMAC-SHA1 sing/verify.
+	- fixed create keyset and ad-key operation.
