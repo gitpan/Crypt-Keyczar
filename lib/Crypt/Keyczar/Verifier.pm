@@ -7,9 +7,9 @@ use Carp;
 
 sub verify {
     my $self = shift;
-    my ($data, $signature, $hidden, $expiration_time) = @_;
+    my ($data, $signature, $hidden) = @_;
 
-    if (length $signature < Crypt::Keyczar::HEADER_SIZE()) {
+    if (!defined $signature || length $signature < Crypt::Keyczar::HEADER_SIZE()) {
         croak "signature is short";
     }
 
@@ -24,7 +24,9 @@ sub verify {
     }
 
     my $engine = $key->get_engine();
-   if (defined $expiration_time && $expiration_time > 0) {
+    my $expiration_time;
+    if ($key->can('digest_size') && length $mac > $key->digest_size) {
+        ($expiration_time, $mac) = unpack "N1 a*", $mac;
         $engine->update(pack 'N1', $expiration_time);
     }
     if (defined $hidden && length $hidden > 0) {
@@ -32,7 +34,12 @@ sub verify {
     }
     $engine->update($data);
     $engine->update(Crypt::Keyczar::FORMAT_BYTES());
-    return $engine->verify($mac);
+    my $result = $engine->verify($mac);
+    return $result if !$result;
+    if (defined $expiration_time) {
+        return time() < $expiration_time;
+    }
+    return $result;
 }
 
 1;

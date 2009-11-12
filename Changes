@@ -1,3 +1,7 @@
+0.04	Thu Nov 12 19:16:26 JST 2009
+	- suppress null signature warnings.
+	- support expiration time.
+
 0.03	Wed Nov 11 17:07:11 JST 2009
 	- support HMAC-SHA224, HMAC-SHA256, HMAC-SHA384, HMAC-SHA512.
 

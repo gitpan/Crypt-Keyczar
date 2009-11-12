@@ -83,6 +83,9 @@ sub get_engine {
 sub hash { return $_[0]->get_public->hash(); }
 
 
+sub digest_size { return 256; }
+
+
 sub get_public { return $_[0]->{publicKey}; }
 
 1;

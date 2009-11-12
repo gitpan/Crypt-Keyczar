@@ -54,6 +54,9 @@ sub set {
 }
 
 
+sub digest_size { return 256; }
+
+
 sub get_engine {
     my $self = shift;
     my @args = map { Crypt::Keyczar::Util::decode($_) } ($self->{modulus}, $self->{publicExponent});

@@ -62,6 +62,9 @@ sub set {
 }
 
 
+sub digest_size { return 48; }
+
+
 sub get_engine {
     my $self = shift;
     my @args = map { Crypt::Keyczar::Util::decode($_) } ($self->{y}, $self->{p}, $self->{q}, $self->{g});

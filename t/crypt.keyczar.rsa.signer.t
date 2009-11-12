@@ -1,4 +1,4 @@
-use Test::More tests => 8;
+use Test::More tests => 11;
 use strict;
 use warnings;
 use FindBin;
@@ -31,6 +31,13 @@ ok($sig3, 'sign pubkey');
 
 my $v_pub = Crypt::Keyczar::Signer->new($KEYSET_PUB);
 ok($v_pub->verify('This is test data', $sig3), 'verify public key');
+
+
+ok(my $sig4 = $signer->sign("Hello World!", time() + 5 * 60), 'sign with expiration');
+ok($v_pub->verify("Hello World!", $sig4), 'verify with expiration');
+$sig4 = $signer->sign("Hello World!", time() - 5 * 60);
+ok(!$v_pub->verify("Hello World!", $sig4), 'expired signature');
+
 
 
 sub get_file {

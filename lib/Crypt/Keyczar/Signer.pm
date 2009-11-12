@@ -69,6 +69,10 @@ Create a new L<Crypt::Keyczar::Signer> object with a L<Crypt::Keyczar::Reader> o
 
 Sign the given I<$message> and return a signature.
 
+* sign($message, $expiration_time)
+
+Sign the given I<$message> and return a signature with expiration.
+
 * verify($message, $signature>)
 
 Verifies a I<$signature> on the given I<$message>.
