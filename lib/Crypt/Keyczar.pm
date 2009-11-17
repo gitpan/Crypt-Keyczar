@@ -8,7 +8,7 @@ use Crypt::Keyczar::KeyMetadata;
 use Crypt::Keyczar::Key;
 
 
-our $VERSION = 0.04;
+our $VERSION = 0.05;
 
 use constant FORMAT_VERSION => 0;
 use constant FORMAT_BYTES   => pack 'C', 0;

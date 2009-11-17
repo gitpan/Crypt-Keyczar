@@ -2,10 +2,10 @@ use Test::More tests => 204;
 use strict;
 use warnings;
 use FindBin;
-use JSON::XS;
 use File::Path;
 
 use Crypt::Keyczar::FileWriter;
+use Crypt::Keyczar::Util qw(decode_json);
 
 
 sub BEGIN { use_ok('Crypt::Keyczar::Tool') }

@@ -1,4 +1,4 @@
-Crypt::Keyczar version 0.04
+Crypt::Keyczar version 0.05
 ===========================
 
 Keyczar is an open source cryptographic toolkit designed to make it
@@ -72,7 +72,7 @@ DEPENDENCIES
 ------------
 This module requires these other modules and libraries:
 
-  libcrypto (OpenSSL)
+  libcrypto (OpenSSL 0.9.8 or later)
   MIME::Base64
   JSON (version 1.xxx or 2.xxx)
 

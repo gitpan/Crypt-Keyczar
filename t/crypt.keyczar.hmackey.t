@@ -1,8 +1,7 @@
 use Test::More tests => 11;
 use strict;
 use warnings;
-use JSON::XS;
-use Crypt::Keyczar::Util;
+use Crypt::Keyczar::Util qw(decode_json);
 
 BEGIN { use_ok 'Crypt::Keyczar::Key' };
 

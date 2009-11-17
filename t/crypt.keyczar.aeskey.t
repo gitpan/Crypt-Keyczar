@@ -1,7 +1,6 @@
 use Test::More tests => 14;
 use strict;
 use warnings;
-use JSON::XS;
 use Crypt::Keyczar::Util;
 
 BEGIN { use_ok 'Crypt::Keyczar::Key' }

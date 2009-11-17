@@ -1,3 +1,7 @@
+0.05	Tue Nov 17 15:10:09 JST 2009
+	- install 'bin/keyczar' tool. (thanks to Leon Brocard)
+	- independent JSON::XS. (thanks to CPAN testers)
+
 0.04	Thu Nov 12 19:16:26 JST 2009
 	- suppress null signature warnings.
 	- support expiration time.

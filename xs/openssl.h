@@ -99,31 +99,28 @@ crypt__keyczar__util__bignum2hv(BIGNUM *bn, const char *key, HV *hv)
 }
 
 
-#if !defined(SHA224_DIGEST_LENGTH)
+#if !defined(SHA256_DIGEST_LENGTH)
 const EVP_MD *EVP_sha224(void)
 {
-    croak("unsupported digest name: SHA224, please updage your openssl library.");
+    croak("unsupported digest name: SHA224, please update to OpenSSL 0.9.8 or later.");
 }
-#endif /* SHA224_DIGEST_LENGTH */
 
-#ifndef SHA256_DIGEST_LENGTH
 const EVP_MD *EVP_sha256(void)
 {
-    croak("unsupported digest name: SHA256, please updage your openssl library.");
+    croak("unsupported digest name: SHA256, please updage to OpenSSL 0.9.8 or later.");
 }
 #endif /* SHA256_DIGEST_LENGTH */
 
-#ifndef SHA384_DIGEST_LENGTH
-const EVP_MD *EVP_sha384(void)
-{
-    croak("unsupported digest name: SHA384, please updage your openssl library.");
-}
-#endif /* SHA384_DIGEST_LENGTH */
 
 #ifndef SHA512_DIGEST_LENGTH
+const EVP_MD *EVP_sha384(void)
+{
+    croak("unsupported digest name: SHA384, please updage to OpenSSL 0.9.8 or later.");
+}
+
 const EVP_MD *EVP_sha512(void)
 {
-    croak("unsupported digest name: SHA512, please updage your openssl library.");
+    croak("unsupported digest name: SHA512, please updage to OpenSSL 0.9.8 or later.");
 }
 #endif /* SHA512_DIGEST_LENGTH */
 
