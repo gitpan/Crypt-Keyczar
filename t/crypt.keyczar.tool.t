@@ -5,7 +5,7 @@ use FindBin;
 use File::Path;
 
 use Crypt::Keyczar::FileWriter;
-use Crypt::Keyczar::Util qw(decode_json);
+use Crypt::Keyczar::Util qw(decode_json encode_json);
 
 
 sub BEGIN { use_ok('Crypt::Keyczar::Tool') }
@@ -86,12 +86,6 @@ pubkey_operation($tool, "$FindBin::Bin/data/tool/crypt-rsa",
     { purpose => 'ENCRYPT', type => 'RSA_PUB' },
     [ qw(modulus publicExponent size) ], [ qw(publicKey privateExponent primeP primeQ primeExponentP primeExponentQ crtCoefficient)]
 );
-
-
-
-
-
-
 
 
 
@@ -197,7 +191,7 @@ sub pubkey_operation {
     ok(-e $path. "-pub/meta");
     my $json = _load_json($path. "-pub/meta"); 
     ok($json);
-    ok(scalar @{$json->{versions}} == 2);
+    ok(scalar @{$json->{versions}} == 3);
     ok(!$json->{encrypted});
     for my $key (sort keys %$opt) {
         ok($json->{$key} eq $opt->{$key}, qq|{ "$key": "$opt->{$key}"}|);
@@ -219,6 +213,7 @@ sub _get_primary_number {
     my $json = _load_json("$path/meta");
     my $primary;
     for my $v (@{$json->{versions}}) {
+        next if !$v;
         $primary = $v->{versionNumber} if $v->{status} eq 'PRIMARY';
     }
     return $primary; 
@@ -231,6 +226,7 @@ sub _get_version_status {
 
     my $json = _load_json("$path/meta");
     for my $v (@{$json->{versions}}) {
+        next if !$v;
         return $v->{status} if $v->{versionNumber} == $version;
     }
     return undef;

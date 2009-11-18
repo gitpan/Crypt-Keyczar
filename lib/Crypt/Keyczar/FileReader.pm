@@ -32,6 +32,9 @@ sub init {
 sub get_key {
     my $self = shift;
     my $version = shift;
+    if (!defined $version || $version < 1) {
+        croak "require version number";
+    }
     return $self->_read(sprintf '%s%d', $self->{__location}, $version);
 }
 

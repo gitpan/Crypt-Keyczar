@@ -8,7 +8,7 @@ use Crypt::Keyczar::KeyMetadata;
 use Crypt::Keyczar::Key;
 
 
-our $VERSION = 0.05;
+our $VERSION = 0.06;
 
 use constant FORMAT_VERSION => 0;
 use constant FORMAT_BYTES   => pack 'C', 0;
@@ -44,6 +44,7 @@ sub _new {
 
     $self->metadata(Crypt::Keyczar::KeyMetadata->read($reader->get_metadata()));
     for my $v ($self->metadata->get_versions) {
+        next if !$v;
         if ($v->status eq 'PRIMARY') {
             if ($self->primary) {
                 croak "duplicate primary key";

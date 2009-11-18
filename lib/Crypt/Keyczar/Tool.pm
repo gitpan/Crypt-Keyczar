@@ -141,8 +141,10 @@ sub pubkey {
 
     $self->writer->location($destination);
     for my $v ($private->get_versions) {
-        my $p = $kcz->get_key($v)->get_public;
-        $self->writer->put_key($v->get_number, $p);
+        if ($v) {
+            my $p = $kcz->get_key($v)->get_public;
+            $self->writer->put_key($v->get_number, $p);
+        }
         $public->add_version($v);
     }
     $self->writer->put_metadata($public);

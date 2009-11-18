@@ -10,6 +10,7 @@ use Crypt::Keyczar::Engine;
 our @EXPORT_OK = qw(
     encode_json decode_json
     json_true json_false
+    json_null
 );
 
 
@@ -19,6 +20,7 @@ sub create_from_json {
     my $class = shift;
 
     my $opts = decode_json($json);
+    return undef if !defined $opts;
     return $class->new(%{$opts});
 }
 
@@ -27,6 +29,7 @@ sub encode_json { return Crypt::Keyczar::Util::JSON::encode(@_); }
 sub decode_json { return Crypt::Keyczar::Util::JSON::decode(@_); }
 sub json_true   { return Crypt::Keyczar::Util::JSON::true(); }
 sub json_false  { return Crypt::Keyczar::Util::JSON::false(); }
+sub json_null   { return Crypt::Keyczar::Util::JSON::null(); }
 
 
 sub encode {
@@ -84,7 +87,7 @@ sub decode {
 
 sub true { return is_v1() ? JSON::True() : JSON::true(); }
 sub false { return is_v1() ? JSON::False() : JSON::false(); }
-
+sub null { return is_v1() ? JSON::Null() : JSON::null(); }
 
 1;
 __END__
