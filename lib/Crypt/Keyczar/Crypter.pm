@@ -28,8 +28,10 @@ sub decrypt {
     my $cipher_body = substr $body, 0, $mac->digest_size()*-1;
     my $signature   = substr $body, $mac->digest_size()*-1;
     my $iv = $engine->init($cipher_body); 
-    my $plain_text = $engine->decrypt(length $iv > 0 ? substr($cipher_body, length $iv) : $body);
-    $mac->update(substr $data, 0, $mac->digest_size()*-1);
+    my $cipher_text = length $iv > 0 ? substr($cipher_body, length $iv) : $body;
+    my $plain_text = $engine->decrypt($cipher_text);
+    my $signed_text = substr $data, 0, $mac->digest_size()*-1;
+    $mac->update($signed_text);
     if (!$mac->verify($signature)) {
         croak "invalid signature";
     }

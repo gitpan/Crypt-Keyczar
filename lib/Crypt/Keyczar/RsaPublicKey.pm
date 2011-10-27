@@ -54,13 +54,15 @@ sub set {
 }
 
 
-sub digest_size { return 256; }
+sub digest_size { return $_[0]->{_digest_size}; }
 
 
 sub get_engine {
     my $self = shift;
     my @args = map { Crypt::Keyczar::Util::decode($_) } ($self->{modulus}, $self->{publicExponent});
-    return Crypt::Keyczar::RsaPublicKeyEngine->new(@args);
+    my $engine = Crypt::Keyczar::RsaPublicKeyEngine->new(@args);
+    $self->{_digest_size} = $engine->digest_size;
+    return $engine;
 }
 
 

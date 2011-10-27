@@ -1,4 +1,3 @@
-use 5.008006;
 use ExtUtils::MakeMaker;
 
 

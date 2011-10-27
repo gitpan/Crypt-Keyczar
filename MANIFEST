@@ -86,6 +86,11 @@ t/data/signer-hmac-sha512/1
 t/data/signer-hmac-sha512/meta
 t/data/signer/1
 t/data/signer/meta
+t/compat-java/Makefile
+t/compat-java/TestDecrypt.java
+t/compat-java/TestEncrypt.java
+t/compat-java/TestSign.java
+t/compat-java/TestVerify.java
 TODO
 typemap
 xs/openssl.h

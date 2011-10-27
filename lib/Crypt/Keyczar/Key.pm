@@ -30,12 +30,12 @@ my %POLICY = (
     },
     'RSA_PRIV' => {
         object => 'Crypt::Keyczar::RsaPrivateKey',
-        keysize => [2048, 1024, 768, 512],
+        keysize => [4096, 2048, 1024, 768, 512],
         outsize => 256
     },
     'RSA_PUB' => {
         object => 'Crypt::Keyczar::RsaPublicKey',
-        keysize => [2048, 1024, 768, 512],
+        keysize => [4096, 2048, 1024, 768, 512],
         outsize => 256
     },
 

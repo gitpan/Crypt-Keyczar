@@ -10,6 +10,8 @@ new(class, type, key)
 	SV *key
 	CODE:
 	{
+	    unsigned char *k;
+	    STRLEN l;
 	    const EVP_MD *md;
 	    PERL_UNUSED_VAR(class);
 
@@ -36,7 +38,8 @@ new(class, type, key)
 	    Newz(0, RETVAL->context, 1, HMAC_CTX);
 
 	    HMAC_CTX_init(RETVAL->context);
-            HMAC_Init(RETVAL->context, SvPVbyte_nolen(key), SvCUR(key), md);
+	    k = (unsigned char *)SvPV(key, l);
+            HMAC_Init(RETVAL->context, k, l, md);
 	}
 	OUTPUT:
 	    RETVAL
@@ -75,10 +78,13 @@ update(self, ...)
 	{
 	    int i;
 	    SV *data;
+	    STRLEN l;
+	    unsigned char *in;
 
 	    for (i = 1; i < items; i++) {
 	        data = ST(i);
-	        HMAC_Update(self->context, (const unsigned char *)SvPVbyte_nolen(data), SvCUR(data));
+	        in = (unsigned char *)SvPV(data, l);
+	        HMAC_Update(self->context, (const unsigned char *)in, l);
             }
 	}
 
@@ -106,13 +112,16 @@ verify(self, mac)
 	{
 	    unsigned char md[EVP_MAX_MD_SIZE];
 	    unsigned int l;
+	    STRLEN in_l;
+	    unsigned char *in;
 
-	    if (SvCUR(mac) != EVP_MD_size(self->context->md)) {
+	    in = (unsigned char *)SvPV(mac, in_l);
+	    if (in_l != EVP_MD_size(self->context->md)) {
 	        RETVAL = 0;
 	    }
 	    else {
 	        HMAC_Final(self->context, md, &l);
-	        RETVAL = (memcmp(md, SvPVbyte_nolen(mac), EVP_MD_size(self->context->md)) == 0);
+	        RETVAL = (memcmp(md, in, in_l) == 0);
 	    }
 	}
 	OUTPUT:

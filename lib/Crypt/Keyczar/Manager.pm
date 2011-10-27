@@ -23,7 +23,7 @@ sub promote {
         $self->primary($version);
     }
     elsif ($version->status eq 'INACTIVE') {
-        $self->status('ACTIVE');
+        $version->status('ACTIVE');
     }
 }
 

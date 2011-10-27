@@ -11,19 +11,23 @@ new(class, modulus, publicExponent)
 	CODE:
 	{
 	    RSA *rsa;
+	    STRLEN l;
+	    unsigned char *in;
 
 	    PERL_UNUSED_VAR(class);
 	    if ((rsa = RSA_new()) == NULL) {
 	        crypt__keyczar__util__croak_openssl();
 	        /* NOTREACHED */
 	    }
-	    rsa->n = BN_bin2bn((const unsigned char *)SvPVbyte_nolen(modulus), SvCUR(modulus), NULL);
+	    in = (unsigned char *)SvPV(modulus, l);
+	    rsa->n = BN_bin2bn((const unsigned char *)in, l, NULL);
             if (rsa->n == NULL) {
 	        RSA_free(rsa);
 	        crypt__keyczar__util__croak_openssl();
 	        /* NOTREACHED */
 	    }
-	    rsa->e = BN_bin2bn((const unsigned char *)SvPVbyte_nolen(publicExponent), SvCUR(publicExponent), NULL);
+	    in = (unsigned char *)SvPV(publicExponent, l);
+	    rsa->e = BN_bin2bn((const unsigned char *)in, l, NULL);
             if (rsa->e == NULL) {
 	        RSA_free(rsa);
 	        crypt__keyczar__util__croak_openssl();
@@ -66,13 +70,14 @@ encrypt(self, data)
 	SV *data
 	CODE:
 	{
-	    unsigned char *out;
+	    STRLEN in_l;
+	    unsigned char *in, *out;
 	    int size = RSA_size(self->rsa);
 	    int out_l;
 
 	    Newz(0, out, size, unsigned char);
-	    out_l = RSA_public_encrypt(SvCUR(data), (unsigned char *)SvPVbyte_nolen(data),
-	                               out, self->rsa, RSA_PKCS1_OAEP_PADDING);
+	    in = (unsigned char *)SvPV(data, in_l);
+	    out_l = RSA_public_encrypt(in_l, in, out, self->rsa, RSA_PKCS1_OAEP_PADDING);
 	    if (out_l == -1) {
 	        Safefree(out);
 	        crypt__keyczar__util__croak_openssl();
@@ -92,6 +97,9 @@ update(self, ...)
 	{
 	    int i;
 	    SV *data;
+	    STRLEN l;
+	    unsigned char *in;
+
 	    if (self->message == NULL) {
 	        self->message = EVP_MD_CTX_create();
 	        if (!EVP_DigestInit_ex(self->message, EVP_sha1(), NULL)) {
@@ -101,7 +109,8 @@ update(self, ...)
 
 	    for (i = 1; i < items; i++) {
 	        data = ST(i);
-	        if (!EVP_DigestUpdate(self->message, SvPVbyte_nolen(data), SvCUR(data))) {
+	        in = (unsigned char *)SvPV(data, l);
+	        if (!EVP_DigestUpdate(self->message, in, l)) {
 	            croak("cannot update SHA1 context");
 	        }
 	    }
@@ -117,16 +126,16 @@ verify(self, mac)
 	    unsigned char md[EVP_MAX_MD_SIZE];
 	    unsigned int l = 0;
 	    int rc;
+	    STRLEN in_l;
+	    unsigned char *in;
 
 	    if (self->message == NULL) {
 	        RETVAL = 0;
 	        return;
 	    }
 	    EVP_DigestFinal_ex(self->message, md, &l);
-
-	    rc = RSA_verify(NID_sha1,
-	                    md, l,
-                            (unsigned char *)SvPVbyte_nolen(mac), SvCUR(mac), self->rsa);
+	    in = (unsigned char *)SvPV(mac, in_l);
+	    rc = RSA_verify(NID_sha1, md, l, in, in_l, self->rsa);
 	    if (rc == -1) {
 	        crypt__keyczar__util__croak_openssl();
 	        /* NOTREACHED */
@@ -135,3 +144,15 @@ verify(self, mac)
 	}
 	OUTPUT:
 	    RETVAL
+
+
+int
+digest_size(self)
+	Crypt::Keyczar::RsaPublicKeyEngine self
+	CODE:
+	{
+	    RETVAL = RSA_size(self->rsa);
+	}
+	OUTPUT:
+	    RETVAL
+

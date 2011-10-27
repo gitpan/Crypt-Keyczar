@@ -76,14 +76,16 @@ sub get_engine {
         $self->{primeExponentP}, $self->{primeExponentQ},
         $self->{crtCoefficient}
     );
-    return Crypt::Keyczar::RsaPrivateKeyEngine->new(@args);
+    my $engine = Crypt::Keyczar::RsaPrivateKeyEngine->new(@args);
+    $self->{_digest_size} = $engine->digest_size;
+    return $engine;
 }
 
 
 sub hash { return $_[0]->get_public->hash(); }
 
 
-sub digest_size { return 256; }
+sub digest_size { return $_[0]->{_digest_size}; }
 
 
 sub get_public { return $_[0]->{publicKey}; }

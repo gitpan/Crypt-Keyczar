@@ -1,3 +1,10 @@
+0.07	Thu Oct 27 17:42:21 JST 2011
+	- support perl 5.14.x and later version.
+	- add java compat tests.
+	- fixed Key lifecycle management bug, enable promote INACTIVE to ACTIVE.
+	  https://rt.cpan.org/Public/Bug/Display.html?id=62032
+	  Thanks to Freaking Wildchild http://wildchild.sesamid.com/
+
 0.06	Wed Nov 18 17:47:22 JST 2009
 	- fixed Revoke operation bug.
 	  (There is not the compatibility of the keyset which "revoke" key)

@@ -1,4 +1,4 @@
-use Test::More tests => 204;
+use Test::More tests => 218;
 use strict;
 use warnings;
 use FindBin;
@@ -47,7 +47,7 @@ pubkey_operation($tool, "$FindBin::Bin/data/tool/sign-dsa",
 create_operation($tool, "$FindBin::Bin/data/tool/sign-rsa", 'sign', 'rsa', {
     purpose => 'SIGN_AND_VERIFY', name => 'sign RSA t', type => 'RSA_PRIV'
 });
-addkey_operation($tool, "$FindBin::Bin/data/tool/sign-rsa", undef, {
+addkey_operation($tool, "$FindBin::Bin/data/tool/sign-rsa", 2048, {
     size => '2048', 'exist' => [ qw(publicKey privateExponent primeP primeQ primeExponentP primeExponentQ crtCoefficient) ]
 });
 promote_operation($tool, "$FindBin::Bin/data/tool/sign-rsa");
@@ -76,8 +76,8 @@ revoke_operation($tool, "$FindBin::Bin/data/tool/crypt");
 create_operation($tool, "$FindBin::Bin/data/tool/crypt-rsa", 'crypt', 1, {
     purpose => 'DECRYPT_AND_ENCRYPT', name => 'crypt RSA t', type => 'RSA_PRIV'
 });
-addkey_operation($tool, "$FindBin::Bin/data/tool/crypt-rsa", undef, {
-    size => '2048', 'exist' => [ qw(publicKey privateExponent primeP primeQ primeExponentP primeExponentQ crtCoefficient) ]
+addkey_operation($tool, "$FindBin::Bin/data/tool/crypt-rsa", 4096, {
+    size => '4096', 'exist' => [ qw(publicKey privateExponent primeP primeQ primeExponentP primeExponentQ crtCoefficient) ]
 });
 promote_operation($tool, "$FindBin::Bin/data/tool/crypt-rsa");
 demote_operation($tool, "$FindBin::Bin/data/tool/crypt-rsa");
@@ -87,6 +87,64 @@ pubkey_operation($tool, "$FindBin::Bin/data/tool/crypt-rsa",
     [ qw(modulus publicExponent size) ], [ qw(publicKey privateExponent primeP primeQ primeExponentP primeExponentQ crtCoefficient)]
 );
 
+
+# Test key lifetime
+# https://rt.cpan.org/Public/Bug/Display.html?id=62032
+test_key_lifetime($tool, "$FindBin::Bin/data/tool/lifecycle");
+
+
+sub test_key_lifetime {
+    my $tool = shift;
+    my $path = shift;
+
+    my $key_id1;
+    my $key_id2;
+    my $meta;
+    my $v;
+    $tool->create($path, 'sign', {});
+    $key_id1 = $tool->addkey($path, 'PRIMARY', {});
+    $key_id2 = $tool->addkey($path, 'ACTIVE', {});
+    $meta = _load_json("$path/meta");
+    $v = $meta->{versions};
+    is($v->[0]->{status}, 'PRIMARY');
+    is($v->[1]->{status}, 'ACTIVE');
+
+    $tool->promote($path, $key_id2);
+    $meta = _load_json("$path/meta");
+    $v = $meta->{versions};
+    is($v->[0]->{status}, 'ACTIVE');
+    is($v->[1]->{status}, 'PRIMARY');
+
+    $tool->demote($path, $key_id1);
+    $meta = _load_json("$path/meta");
+    $v = $meta->{versions};
+    is($v->[0]->{status}, 'INACTIVE');
+    is($v->[1]->{status}, 'PRIMARY');
+
+    $tool->promote($path, $key_id1);
+    $meta = _load_json("$path/meta");
+    $v = $meta->{versions};
+    is($v->[0]->{status}, 'ACTIVE');
+    is($v->[1]->{status}, 'PRIMARY');
+
+    $tool->promote($path, $key_id1);
+    $meta = _load_json("$path/meta");
+    $v = $meta->{versions};
+    is($v->[0]->{status}, 'PRIMARY');
+    is($v->[1]->{status}, 'ACTIVE');
+
+    $tool->demote($path, $key_id2);
+    $meta = _load_json("$path/meta");
+    $v = $meta->{versions};
+    is($v->[0]->{status}, 'PRIMARY');
+    is($v->[1]->{status}, 'INACTIVE');
+
+    $tool->revoke($path, $key_id2);
+    $meta = _load_json("$path/meta");
+    $v = $meta->{versions};
+    is($v->[0]->{status}, 'PRIMARY');
+    is($v->[1], undef);
+}
 
 
 sub create_operation {
@@ -118,7 +176,7 @@ sub addkey_operation {
     ok(scalar @{$json->{versions}} == 1);
 
     $json = _load_json("$path/$num");
-    ok($json->{size} eq $opt->{size}, qq|{ "size": "xxx" }|);
+    is($json->{size}, $opt->{size});
     for my $key (@{$opt->{exist}}) {
         ok(defined $json->{$key}, qq{{"$key": ...}});
     }
