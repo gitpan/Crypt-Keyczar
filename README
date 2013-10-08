@@ -1,5 +1,5 @@
-Crypt::Keyczar version 0.07
-===========================
+Crypt::Keyczar
+==============
 
 Keyczar is an open source cryptographic toolkit designed to make it
 easier and safer for devlopers to use cryptography in their

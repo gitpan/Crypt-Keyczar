@@ -102,3 +102,4 @@ xs/openssl/RsaPrivateKeyEngine.xst
 xs/openssl/RsaPublicKeyEngine.xst
 xs/openssl/Util.xst
 META.yml                                 Module meta-data (added by MakeMaker)
+META.json

@@ -1,3 +1,6 @@
+0.08	Tue Oct  8 15:35:42 JST 2013
+	- remove illegal characters in metadata.
+
 0.07	Thu Oct 27 17:42:21 JST 2011
 	- support perl 5.14.x and later version.
 	- add java compat tests.

@@ -1,23 +1,23 @@
---- #YAML:1.0
-name:               Crypt-Keyczar
-version:            0.07
-abstract:           Keyczar: A Cryptographic Toolkit
+---
+abstract: 'Keyczar is an open source cryptographic toolkit '
 author:
-    - 小山浩之 <oyama@mixi.co.jp>
-license:            unknown
-distribution_type:  module
-configure_requires:
-    ExtUtils::MakeMaker:  0
+  - '小山浩之 <oyama@mixi.co.jp>'
 build_requires:
-    ExtUtils::MakeMaker:  0
-requires:
-    JSON:          0
-    MIME::Base64:  0
-no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.57_05
+  ExtUtils::MakeMaker: 0
+configure_requires:
+  ExtUtils::MakeMaker: 0
+dynamic_config: 1
+generated_by: 'ExtUtils::MakeMaker version 6.68, CPAN::Meta::Converter version 2.131560'
+license: unknown
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Crypt-Keyczar
+no_index:
+  directory:
+    - t
+    - inc
+requires:
+  JSON: 0
+  MIME::Base64: 0
+version: 0.08

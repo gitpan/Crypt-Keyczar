@@ -8,7 +8,7 @@ use Crypt::Keyczar::KeyMetadata;
 use Crypt::Keyczar::Key;
 
 
-our $VERSION = 0.07;
+our $VERSION = 0.08;
 
 use constant FORMAT_VERSION => 0;
 use constant FORMAT_BYTES   => pack 'C', 0;
@@ -149,7 +149,7 @@ __END__
 
 =head1 NAME
 
-Crypt::Keyczar - Keyczar: A Cryptographic Toolkit
+Crypt::Keyczar - Keyczar is an open source cryptographic toolkit 
 
 =head1 SYNOPSIS
 
